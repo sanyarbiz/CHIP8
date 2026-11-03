@@ -1,0 +1,45 @@
+MEMORY_SIZE = 4096
+DISPLAY_WIDTH = 64
+DISPLAY_HEIGHT = 32
+PC_START_ADDRESS = 0x200
+FONT_START_ADDRESS = 0x50
+FONT_BYTES = (
+    0xF0, 0x90, 0x90, 0x90, 0xF0,  # 0
+    0x20, 0x60, 0x20, 0x20, 0x70,  # 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0,  # 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0,  # 3
+    0x90, 0x90, 0xF0, 0x10, 0x10,  # 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0,  # 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0,  # 6
+    0xF0, 0x10, 0x20, 0x40, 0x40,  # 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0,  # 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0,  # 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90,  # A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0,  # B
+    0xF0, 0x80, 0x80, 0x80, 0xF0,  # C
+    0xE0, 0x90, 0x90, 0x90, 0xE0,  # D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0,  # E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  # F
+)
+FONT_END_ADDRESS = len(FONT_BYTES) + FONT_START_ADDRESS
+
+
+class Chip8:
+    def __init__(self) -> None:
+        self.memory: bytearray = bytearray(MEMORY_SIZE)  # RAM
+        self.memory[FONT_START_ADDRESS:FONT_END_ADDRESS] = FONT_BYTES
+        self.v: bytearray = bytearray(16)  # 16 Register
+        self.i: int = 0  # Index Register
+        self.pc: int = PC_START_ADDRESS  # Program Counter
+        self.stack: list[int] = []  # Rücksprungadressen
+        self.display: bytearray = bytearray(
+            DISPLAY_WIDTH * DISPLAY_HEIGHT)  # Display. 1 = an, 0 = aus. Schwarz/Weiß. Index = y * 64 + x
+        self.keys: list[bool] = [False] * 16  # 16 Tasten.
+
+        # Werden 60 mal pro Sekunde um 1 kleiner
+        self.delay_timer: int = 0  # Spiele messen damit die Zeit
+        self.sound_timer: int = 0  # Wenn x > 0, dann piepts
+
+
+c = Chip8()
+print(hex(c.memory[0x51]))
